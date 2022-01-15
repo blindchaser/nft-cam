@@ -17,8 +17,10 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^0.24.0",
     "chroma-js": "^2.1.2",
     "gsap": "^3.9.1",
+    "node-polyfill-webpack-plugin": "^1.1.4",
     "node-sass": "^7.0.1",
     "prop-types": "^15.8.1",
     "react": "^17.0.2",
@@ -31,11 +33,12 @@
     "simplex-noise": "^3.0.1",
     "smooth-scrollbar": "^8.7.3",
     "three": "^0.135.0",
-    "three-gltf-loader": "^1.111.0"
+    "three-gltf-loader": "^1.111.0",
+    "web3": "^1.6.1"
   },
   "scripts": {
     "dev": "webpack serve --mode=development",
-    "build": "webpack",
+    "build": "webpack && rm -rf ../backend/public && cp -a ./dist/. ../backend/public",
     "eslint-fix-js": "yarn eslint --fix 'src/**/*.js'",
     "eslint-fix-jsx": "yarn eslint --fix 'src/**/*.jsx'",
     "eslint-fix": "yarn eslint-fix-js && yarn eslint-fix-jsx",

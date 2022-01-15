@@ -5,6 +5,9 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import TryInAR from "./TryInAR";
 import ConnectWallet from "./ConnectWallet";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import Web3 from "web3";
 
 const CssTextField = styled(TextField)({
   "& .MuiFilledInput-input": {
@@ -16,6 +19,21 @@ const CssTextField = styled(TextField)({
 });
 
 export default function Home() {
+  const [account, setAccount] = useState(); // state variable to set account.
+  const [nfts, setNfts] = useState(); // state variable to set account.
+  const requestAssets = async () => {
+    const web3 = new Web3(Web3.givenProvider || "http://localhost:7545");
+    const accounts = await web3.eth.requestAccounts();
+    console.log(accounts);
+    setAccount(accounts[0]);
+    const reqUrl =
+      "https://api.opensea.io/api/v1/assets?format=json&owner=" + accounts[0];
+    console.log(reqUrl);
+    const response = await axios.get(reqUrl);
+    setNfts(response);
+    console.log(response);
+  };
+
   return (
     <div>
       <Typography variant="h1" align="center" color="white">
@@ -53,6 +71,9 @@ export default function Home() {
         Or
       </Typography>
       <ConnectWallet />
+      <button onClick={requestAssets}>Request Assets</button>
+      <div>Your account is: {account}</div>
+      <div>Your nfts are: {JSON.stringify(nfts)}</div>
     </div>
   );
 }
