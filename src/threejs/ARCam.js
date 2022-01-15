@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import initScene from "./scene";
+import "./scene.scss";
 import 'regenerator-runtime/runtime';
 
 class ARCam extends Component {
