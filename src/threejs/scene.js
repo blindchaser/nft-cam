@@ -5,88 +5,13 @@ import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
-function init() {
-  new RGBELoader()
-    .setPath("textures/equirectangular/")
-    .load("lebombo_1k.hdr", function (texture) {
-      texture.mapping = THREE.EquirectangularReflectionMapping;
-      scene.environment = texture;
-
-      const loader = new GLTFLoader();
-      //models/gltf/nft/body.gltf
-      //https://storage.opensea.io/files/9b17d37cd81949df47735fea9118529c.gltf
-      loader.load(
-        "https://storage.opensea.io/files/9b17d37cd81949df47735fea9118529c.gltf",
-        function (gltf) {
-          gltf.scene.scale.set(0.01, 0.01, 0.01);
-          bodyNodes.root = gltf.scene.children[0];
-          bodyNodes.controller = gltf.scene.children[0].children[1];
-          bodyNodes.hip = gltf.scene.children[0].children[1].children[1];
-          bodyNodes.chest =
-            gltf.scene.children[0].children[1].children[1].children[0];
-          bodyNodes.rightThigh =
-            gltf.scene.children[0].children[1].children[1].children[1];
-          bodyNodes.rightLeg =
-            gltf.scene.children[0].children[1].children[1].children[1].children[0];
-          bodyNodes.rightFoot =
-            gltf.scene.children[0].children[1].children[1].children[1].children[0].children[0];
-
-          bodyNodes.leftThigh =
-            gltf.scene.children[0].children[1].children[1].children[2];
-          bodyNodes.leftLeg =
-            gltf.scene.children[0].children[1].children[1].children[2].children[0];
-          bodyNodes.leftFoot =
-            gltf.scene.children[0].children[1].children[1].children[2].children[0].children[0];
-
-          bodyNodes.head =
-            gltf.scene.children[0].children[1].children[1].children[0].children[0];
-          bodyNodes.leftArm =
-            gltf.scene.children[0].children[1].children[1].children[0].children[1];
-          bodyNodes.rightArm =
-            gltf.scene.children[0].children[1].children[1].children[0].children[2];
-          bodyNodes.leftForeArm =
-            gltf.scene.children[0].children[1].children[1].children[0].children[1].children[0];
-          bodyNodes.rightForeArm =
-            gltf.scene.children[0].children[1].children[1].children[0].children[2].children[0];
-          bodyNodes.leftHand =
-            gltf.scene.children[0].children[1].children[1].children[0].children[1].children[0].children[0];
-          bodyNodes.rightHand =
-            gltf.scene.children[0].children[1].children[1].children[0].children[2].children[0].children[0];
-
-          //console.log(bodyNodes)
-
-          gltf.scene.traverse(function (child) {
-            if (child.isMesh) {
-              console.log(child.name);
-            }
-          });
-          scene.add(gltf.scene);
-          const axesHelper = new THREE.AxesHelper(2);
-          scene.add(axesHelper);
-          render();
-        }
-      );
-    });
-  // window.addEventListener( 'resize', onWindowResize );
-  // const controls = new OrbitControls( threeDcamera, renderer.domElement );
-  //controls.addEventListener( 'change', render ); // use if there is no animation loop
-  // controls.minDistance = 0.5;
-  // controls.maxDistance = 10;
-  // controls.target.set( 0, 0, - 0.2 );
-  //controls.update();
-}
-function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(window.innerWidth, window.innerHeight);
-
-  render();
-}
-// Render Loop
-
 export default function initScene() {
   //#region custom part
+
+  // When debugMode is false, the UI would be more clean, and no debug canvas/gizmos
+  // will be shown.
+  // debugMode should be false after release.
+  var debugMode = true
   //set a list of body nodes
   var bodyNodes = {};
   var posePositions = new Array(33);
@@ -330,11 +255,11 @@ export default function initScene() {
       defaultPosePositions[index].x;
       posePositions[index] = new THREE.Vector3(
         element.x * element.visibility +
-          defaultPosePositions[index].x * (1 - element.visibility),
+        defaultPosePositions[index].x * (1 - element.visibility),
         element.y * element.visibility +
-          defaultPosePositions[index].y * (1 - element.visibility),
+        defaultPosePositions[index].y * (1 - element.visibility),
         element.z * element.visibility +
-          defaultPosePositions[index].z * (1 - element.visibility)
+        defaultPosePositions[index].z * (1 - element.visibility)
       );
     });
     //console.log(posePositions)
@@ -434,51 +359,54 @@ export default function initScene() {
 
   // Append Renderer to DOM
   //document.body.appendChild( renderer.domElement );
-  // Create a Cube Mesh with basic material
-  var geometry = new THREE.BoxGeometry(0.02, 0.02, 0.02);
-  var material = new THREE.MeshBasicMaterial({ color: "#433F81" });
-  var elbowMat = new THREE.MeshBasicMaterial({ color: "#FF0000" });
-  var shoulderMat = new THREE.MeshBasicMaterial({ color: "#0000FF" });
-  var hipMat = new THREE.MeshBasicMaterial({ color: "#00FF00" });
-  var kneeMat = new THREE.MeshBasicMaterial({ color: "#FFCC00" });
-  var ankleMat = new THREE.MeshBasicMaterial({ color: "#000000" });
+  if (debugMode) {
+    // Create a Cube Mesh with basic material
+    var geometry = new THREE.BoxGeometry(0.02, 0.02, 0.02);
+    var material = new THREE.MeshBasicMaterial({ color: "#433F81" });
+    var elbowMat = new THREE.MeshBasicMaterial({ color: "#FF0000" });
+    var shoulderMat = new THREE.MeshBasicMaterial({ color: "#0000FF" });
+    var hipMat = new THREE.MeshBasicMaterial({ color: "#00FF00" });
+    var kneeMat = new THREE.MeshBasicMaterial({ color: "#FFCC00" });
+    var ankleMat = new THREE.MeshBasicMaterial({ color: "#000000" });
 
-  var cube = new THREE.Mesh(geometry, material);
-  var debugSphere = new THREE.Mesh(
-    new THREE.SphereGeometry(0.03, 0.03, 0.03),
-    new THREE.MeshBasicMaterial({ color: "#FF0000" })
-  );
-  var debugCylinder = new THREE.Mesh(
-    new THREE.BoxGeometry(0.6, 0.01, 0.01),
-    new THREE.MeshBasicMaterial({ color: "#FF0000" })
-  );
-  var debugBox = new THREE.Mesh(
-    new THREE.BoxGeometry(0.03, 0.03, 0.03),
-    new THREE.MeshBasicMaterial({ color: "#AA0000" })
-  );
+    var cube = new THREE.Mesh(geometry, material);
+    var debugSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(0.03, 0.03, 0.03),
+      new THREE.MeshBasicMaterial({ color: "#FF0000" })
+    );
+    var debugCylinder = new THREE.Mesh(
+      new THREE.BoxGeometry(0.6, 0.01, 0.01),
+      new THREE.MeshBasicMaterial({ color: "#FF0000" })
+    );
+    var debugBox = new THREE.Mesh(
+      new THREE.BoxGeometry(0.03, 0.03, 0.03),
+      new THREE.MeshBasicMaterial({ color: "#AA0000" })
+    );
 
-  for (var i = 0; i < 33; i++) {
-    if (i == 13 || i == 14) {
-      poseCubes[i] = new THREE.Mesh(geometry, elbowMat);
-    } else if (i == 23 || i == 24) {
-      poseCubes[i] = new THREE.Mesh(geometry, hipMat);
-    } else if (i == 11 || i == 12) {
-      poseCubes[i] = new THREE.Mesh(geometry, shoulderMat);
-    } else if (i == 25 || i == 26) {
-      poseCubes[i] = new THREE.Mesh(geometry, kneeMat);
-    } else if (i == 27 || i == 28) {
-      poseCubes[i] = new THREE.Mesh(geometry, ankleMat);
-    } else {
-      poseCubes[i] = new THREE.Mesh(geometry, material);
+    for (var i = 0; i < 33; i++) {
+      if (i == 13 || i == 14) {
+        poseCubes[i] = new THREE.Mesh(geometry, elbowMat);
+      } else if (i == 23 || i == 24) {
+        poseCubes[i] = new THREE.Mesh(geometry, hipMat);
+      } else if (i == 11 || i == 12) {
+        poseCubes[i] = new THREE.Mesh(geometry, shoulderMat);
+      } else if (i == 25 || i == 26) {
+        poseCubes[i] = new THREE.Mesh(geometry, kneeMat);
+      } else if (i == 27 || i == 28) {
+        poseCubes[i] = new THREE.Mesh(geometry, ankleMat);
+      } else {
+        poseCubes[i] = new THREE.Mesh(geometry, material);
+      }
+
+      scene.add(poseCubes[i]);
     }
-
-    scene.add(poseCubes[i]);
+    // Add cube to Scene
+    scene.add(cube);
+    scene.add(debugCylinder);
+    scene.add(debugSphere);
+    scene.add(debugBox);
   }
-  // Add cube to Scene
-  scene.add(cube);
-  scene.add(debugCylinder);
-  scene.add(debugSphere);
-  scene.add(debugBox);
+
 
   //webcam video texture part
   var width = window.innerWidth;
@@ -614,11 +542,12 @@ export default function initScene() {
       bodyNodes.leftThigh.rotation.set(0, 0, 0);
       bodyNodes.rightThigh.rotation.set(0, 0, 0);
 
-      debugCylinder.quaternion.setFromUnitVectors(
-        new THREE.Vector3(-1, 0, 0),
-        poseData.rightArmVector.clone().normalize()
-      );
-
+      if (debugMode) {
+        debugCylinder.quaternion.setFromUnitVectors(
+          new THREE.Vector3(-1, 0, 0),
+          poseData.rightArmVector.clone().normalize()
+        );
+      }
       bodyNodes.hip.quaternion.setFromUnitVectors(
         new THREE.Vector3(0, 1, 0),
         poseData.hipVector.clone().normalize()
@@ -737,8 +666,92 @@ export default function initScene() {
     renderer.clearDepth();
     // render the actual scene
     renderer.render(scene, threeDcamera);
+    //#endregion
   };
 
+  function init() {
+    console.log("start init")
+
+    const loader = new GLTFLoader();
+    //models/gltf/nft/body.gltf
+    //https://storage.opensea.io/files/9b17d37cd81949df47735fea9118529c.gltf
+    loader.load(
+      "https://storage.opensea.io/files/9b17d37cd81949df47735fea9118529c.gltf",
+      function (gltf) {
+        gltf.scene.scale.set(0.01, 0.01, 0.01);
+        bodyNodes.root = gltf.scene.children[0];
+        bodyNodes.controller = gltf.scene.children[0].children[1];
+        bodyNodes.hip = gltf.scene.children[0].children[1].children[1];
+        bodyNodes.chest =
+          gltf.scene.children[0].children[1].children[1].children[0];
+        bodyNodes.rightThigh =
+          gltf.scene.children[0].children[1].children[1].children[1];
+        bodyNodes.rightLeg =
+          gltf.scene.children[0].children[1].children[1].children[1].children[0];
+        bodyNodes.rightFoot =
+          gltf.scene.children[0].children[1].children[1].children[1].children[0].children[0];
+
+        bodyNodes.leftThigh =
+          gltf.scene.children[0].children[1].children[1].children[2];
+        bodyNodes.leftLeg =
+          gltf.scene.children[0].children[1].children[1].children[2].children[0];
+        bodyNodes.leftFoot =
+          gltf.scene.children[0].children[1].children[1].children[2].children[0].children[0];
+
+        bodyNodes.head =
+          gltf.scene.children[0].children[1].children[1].children[0].children[0];
+        bodyNodes.leftArm =
+          gltf.scene.children[0].children[1].children[1].children[0].children[1];
+        bodyNodes.rightArm =
+          gltf.scene.children[0].children[1].children[1].children[0].children[2];
+        bodyNodes.leftForeArm =
+          gltf.scene.children[0].children[1].children[1].children[0].children[1].children[0];
+        bodyNodes.rightForeArm =
+          gltf.scene.children[0].children[1].children[1].children[0].children[2].children[0];
+        bodyNodes.leftHand =
+          gltf.scene.children[0].children[1].children[1].children[0].children[1].children[0].children[0];
+        bodyNodes.rightHand =
+          gltf.scene.children[0].children[1].children[1].children[0].children[2].children[0].children[0];
+
+        console.log(bodyNodes)
+
+        gltf.scene.traverse(function (child) {
+          if (child.isMesh) {
+            console.log(child.name);
+          }
+        });
+        scene.add(gltf.scene);
+        if (debugMode) {
+          const axesHelper = new THREE.AxesHelper(2);
+          scene.add(axesHelper);
+        }
+        // add directional light
+        // White directional light at half intensity shining from the top.
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(0.4, 0.3, -0.7)
+        scene.add(directionalLight);
+        directionalLight.target = bodyNodes.root;
+
+
+        render();
+      })
+    window.addEventListener('resize', onWindowResize);
+    // const controls = new OrbitControls( threeDcamera, renderer.domElement );
+    //controls.addEventListener( 'change', render ); // use if there is no animation loop
+    // controls.minDistance = 0.5;
+    // controls.maxDistance = 10;
+    // controls.target.set( 0, 0, - 0.2 );
+    //controls.update();
+  }
+  function onWindowResize() {
+    threeDcamera.aspect = window.innerWidth / window.innerHeight;
+    threeDcamera.updateProjectionMatrix();
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+
+    render();
+  }
+  // Render Loop
   init();
   render();
 }
