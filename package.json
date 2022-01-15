@@ -5,6 +5,11 @@
   "dependencies": {
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",
+    "@mediapipe/camera_utils": "^0.3.1640029074",
+    "@mediapipe/control_utils": "^0.6.1629159505",
+    "@mediapipe/control_utils_3d": "^0.2.1625245254",
+    "@mediapipe/drawing_utils": "^0.3.1620248257",
+    "@mediapipe/pose": "^0.4.1633558788",
     "@mui/material": "^5.2.8",
     "@mui/styled-engine": "^5.2.6",
     "@mui/x-data-grid": "^5.2.2",
@@ -25,7 +30,8 @@
     "simplebar-react": "^2.3.6",
     "simplex-noise": "^2.4.0",
     "smooth-scrollbar": "^8.7.3",
-    "three": "^0.135.0"
+    "three": "^0.135.0",
+    "three-gltf-loader": "^1.111.0"
   },
   "scripts": {
     "dev": "webpack serve --mode=development",
