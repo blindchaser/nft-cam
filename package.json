@@ -24,7 +24,7 @@
     "simplebar-react": "^2.3.6",
     "simplex-noise": "^2.4.0",
     "smooth-scrollbar": "^8.7.3",
-    "three": "^0.116.1"
+    "three": "^0.135.0"
   },
   "scripts": {
     "dev": "webpack serve --mode=development",
