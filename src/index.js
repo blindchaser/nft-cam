@@ -1,21 +1,29 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import App from './App'
-import * as serviceWorker from './serviceWorker'
+import React from "react";
+import ReactDOM from "react-dom";
+import { BrowserRouter } from "react-router-dom";
+import App from "./App";
+import * as serviceWorker from "./serviceWorker";
 
-import './index.scss'
+import "./index.scss";
 
-const useStrict = false
+const useStrict = false;
 
 if (useStrict) {
   ReactDOM.render(
     <React.StrictMode>
-      <App />
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </React.StrictMode>,
-    document.getElementById('root')
-  )
+    document.getElementById("root")
+  );
 } else {
-  ReactDOM.render(<App />, document.getElementById('root'))
+  ReactDOM.render(
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>,
+    document.getElementById("root")
+  );
 }
 
-serviceWorker.unregister()
+serviceWorker.unregister();
