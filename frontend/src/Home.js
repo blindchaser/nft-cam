@@ -27,7 +27,7 @@ export default function Home() {
     console.log(accounts);
     setAccount(accounts[0]);
     const reqUrl =
-      "https://api.opensea.io/api/v1/assets?format=json&owner=" + accounts[0];
+      "https://testnets-api.opensea.io/api/v1/assets?format=json&owner=" + accounts[0];
     console.log(reqUrl);
     const response = await axios.get(reqUrl);
     setNfts(response);
