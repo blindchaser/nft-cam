@@ -21,6 +21,7 @@ const CssTextField = styled(TextField)({
 
 export default function Home() {
   const navigate = useNavigate();
+  const [userInput, setUserInput] = useState("");
 
   const [account, setAccount] = useState(); // state variable to set account.
   const [nfts, setNfts] = useState(); // state variable to set account.
@@ -35,6 +36,19 @@ export default function Home() {
     const response = await axios.get(reqUrl);
     setNfts(response);
     console.log(response);
+  };
+
+  const handleTextFieldChange = (e) => {
+    setUserInput(e.target.value);
+  };
+
+  const tryInAR = () => {
+    // Validate the user input looks like a gltf link.
+    if (userInput.endsWith('.gltf')) {
+      console.log('Good');
+    } else {
+      console.log('URL does not contain a 3D NFT!');
+    }
   };
 
   return (
@@ -66,9 +80,10 @@ export default function Home() {
             fullWidth
             label="Enter OpenSea NFT link"
             variant="filled"
+            onChange={ handleTextFieldChange }
           />
         </Box>
-        <TryInAR />
+        <button onClick={ tryInAR }>Try in AR</button>
       </Box>
       <Typography variant="body1" align="center" color="white" mt={1} mb={1}>
         Or

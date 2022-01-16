@@ -1,26 +1,29 @@
 import React, { useContext, useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
-import TryInAR from "./TryInAR";
 import { UserContext } from "./LoginContext";
-import ARCam from "./threejs/ARCam";
-import { Link } from "react-router-dom";
-
-const columns = [
-  { field: "icon", headerName: "", width: 120 },
-  { field: "name", headerName: "NAME", width: 120 },
-  { field: "collection", headerName: "COLLECTION", width: 240 },
-  { field: "type", headerName: "TYPE", width: 120 },
-  {
-    field: "showInAR",
-    headerName: "",
-    renderCell: (cellValues) => {
-      return <Link to="/arcam" style={{ color: "#ffd500" }}>Try in AR</Link>;
-    },
-  },
-];
+import { useNavigate } from "react-router-dom";
 
 export default function NFTList() {
+  const navigate = useNavigate();
+  const columns = [
+    { field: "icon", headerName: "", width: 120 },
+    { field: "name", headerName: "NAME", width: 120 },
+    { field: "collection", headerName: "COLLECTION", width: 240 },
+    { field: "type", headerName: "TYPE", width: 120 },
+    {
+      field: "showInAR",
+      headerName: "",
+      renderCell: (cellValues) => {
+        return <button onClick={ () => {
+          // TODO: Pass this URL to THREE.js scene.
+          console.log(cellValues.row.gltf_url);
+          navigate("/arcam");
+        } }>Try in AR</button>
+      },
+    },
+  ];
+
   const [user] = useContext(UserContext);
   let [rows, updateRows] = useState([]);
   useEffect(() => {
@@ -36,6 +39,7 @@ export default function NFTList() {
               name: info.name,
               collection: info.asset_contract.name,
               type: info.animation_original_url ? "Animation" : "Still",
+              gltf_url: info.animation_original_url,
             },
           ]);
         }
