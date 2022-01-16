@@ -26,17 +26,21 @@ export default function NFTList() {
   useEffect(() => {
     {
       rows = [];
-      for (let i = 0; i < user.nfts.length; i++) {
-        const info = user.nfts[i];
-        updateRows((r) => [
-          ...r,
-          {
-            id: i,
-            name: info.name,
-            collection: info.asset_contract.name,
-            type: info.animation_original_url ? "Animation" : "Still",
-          },
-        ]);
+      if (user.nfts) {
+        for (let i = 0; i < user.nfts.length; i++) {
+          const info = user.nfts[i];
+          updateRows((r) => [
+            ...r,
+            {
+              id: i,
+              name: info.name,
+              collection: info.asset_contract.name,
+              type: info.animation_original_url ? "Animation" : "Still",
+            },
+          ]);
+        }
+      } else {
+        console.log("user.nfts is undefined");
       }
     }
   }, []);

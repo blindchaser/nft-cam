@@ -29,10 +29,11 @@ export default function ConnectWallet() {
     const web3 = new Web3(Web3.givenProvider || "http://localhost:7545");
     const accounts = await web3.eth.requestAccounts();
     console.log(accounts);
-    const network = await web3.eth.net.getNetworkType().then(console.log);
+    const network = await web3.eth.net.getNetworkType();
+    console.log(network);
     const openseaApi =
-      network == "rikeby"
-        ? "https://rinkeby-api.opensea.io/api/v1/assets?format=json&owner="
+      network == "rinkeby"
+        ? "https://testnets-api.opensea.io/api/v1/assets?format=json&owner="
         : "https://api.opensea.io/api/v1/assets?format=json&owner=";
     const reqUrl = openseaApi + accounts[0];
     console.log(reqUrl);
