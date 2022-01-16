@@ -8,6 +8,7 @@ import ConnectWallet from "./ConnectWallet";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Web3 from "web3";
+import { useNavigate } from "react-router-dom";
 
 const CssTextField = styled(TextField)({
   "& .MuiFilledInput-input": {
@@ -19,6 +20,8 @@ const CssTextField = styled(TextField)({
 });
 
 export default function Home() {
+  const navigate = useNavigate();
+
   const [account, setAccount] = useState(); // state variable to set account.
   const [nfts, setNfts] = useState(); // state variable to set account.
   const requestAssets = async () => {
@@ -72,6 +75,7 @@ export default function Home() {
       </Typography>
       <ConnectWallet />
       <button onClick={requestAssets}>Request Assets</button>
+      <button onClick={ () => { navigate("/nftlist"); } }>NFT List</button>
       <div>Your account is: {account}</div>
       <div>Your nfts are: {JSON.stringify(nfts)}</div>
     </div>

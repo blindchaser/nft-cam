@@ -3,7 +3,6 @@ import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import { UserContext } from "./LoginContext";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import Web3 from "web3";
 
 const StyledButton = styled(Button)({

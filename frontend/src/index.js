@@ -21,9 +21,13 @@ if (useStrict) {
   );
 } else {
   ReactDOM.render(
-    <BrowserRouter>
-      <UserContext subPages={<App />} />
-    </BrowserRouter>,
+    <UserContext
+      subPages={
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      }
+    />,
     document.getElementById("root")
   );
 }
