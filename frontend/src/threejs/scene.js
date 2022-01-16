@@ -11,7 +11,8 @@ export default function initScene() {
   // When debugMode is false, the UI would be more clean, and no debug canvas/gizmos
   // will be shown.
   // debugMode should be false after release.
-  var debugMode = true
+  var debugMode = false
+
   //set a list of body nodes
   var bodyNodes = {};
   var posePositions = new Array(33);
@@ -446,11 +447,14 @@ export default function initScene() {
           -element.y,
           element.z
         );
-        poseCubes[index].position.set(
-          posePositionFlipped[index].x,
-          posePositionFlipped[index].y,
-          posePositionFlipped[index].z
-        );
+        if(debugMode){
+          poseCubes[index].position.set(
+            posePositionFlipped[index].x,
+            posePositionFlipped[index].y,
+            posePositionFlipped[index].z
+          );
+        }
+        
       });
 
       poseData.leftShoulderPos = posePositionFlipped[11];
@@ -645,11 +649,14 @@ export default function initScene() {
       bodyNodes.leftLeg.applyQuaternion(leftThighWorldQuatInvert);
 
       //debugSphere.position.set(worldLeft.x, worldLeft.y, worldLeft.z)
-      debugBox.position.set(
-        poseData.rightArmVector.x,
-        poseData.rightArmVector.y,
-        poseData.rightArmVector.z
-      );
+      if(debugMode){
+        debugBox.position.set(
+          poseData.rightArmVector.x,
+          poseData.rightArmVector.y,
+          poseData.rightArmVector.z
+        );
+      }
+      
 
       // var leftLegAxis = new THREE.Vector3(1,0,0)
       // bodyNodes.leftLeg.quaternion.setFromUnitVectors(leftLegAxis, poseData.leftLegVector);
