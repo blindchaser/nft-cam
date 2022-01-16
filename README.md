@@ -2,14 +2,14 @@
 [https://nft-cam.uc.r.appspot.com/
 ]()
 ## Available Scripts
-###Frontend
-####`cd frontend`
+### Frontend
+#### `cd frontend`
 
-####`npm install`
+#### `npm install`
 
 Installs dependencies.
 
-####`npm run dev`
+#### `npm run dev`
 
 Uses Webpack to build the app and serve in a local dev server.
 
