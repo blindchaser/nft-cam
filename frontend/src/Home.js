@@ -40,6 +40,7 @@ const StyledButton = styled(Button)({
 
 export default function Home() {
   const [userInput, setUserInput] = useState("");
+  const [errMsg, setErrMsg] = useState("");
   let [user, setUser, userInputURL, setUserInputURL] = useContext(UserContext)
   const navigate = useNavigate();
 
@@ -62,10 +63,10 @@ export default function Home() {
         setUserInputURL(response.data.animation_url);
         navigate('/arcam');
       } else {
-        console.log("Asset is not GLTF and cannot be used in 3D animation!");
+        setErrMsg("Asset is not GLTF and cannot be displayed in AR! Please try another one.");
       }
     } else {
-      console.log("URL does not look like an OpenSea NFT!");
+      setErrMsg("URL does not look like an OpenSea NFT! Please try again.");
     }
   };
 
@@ -103,6 +104,9 @@ export default function Home() {
         </Box>
         <StyledButton variant="contained" onClick={tryInAR}>Try in AR</StyledButton>
       </Box>
+      <Typography variant="body1" align="center" color="#ffd500" mt={1} mb={1}>
+        {errMsg}
+        </Typography>
       <Typography variant="body1" align="center" color="white" mt={1} mb={1}>
         Or
       </Typography>
