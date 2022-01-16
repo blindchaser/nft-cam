@@ -31,7 +31,8 @@ export default function Home() {
     console.log(accounts);
     setAccount(accounts[0]);
     const reqUrl =
-      "https://testnets-api.opensea.io/api/v1/assets?format=json&owner=" + accounts[0];
+      "https://testnets-api.opensea.io/api/v1/assets?format=json&owner=" +
+      accounts[0];
     console.log(reqUrl);
     const response = await axios.get(reqUrl);
     setNfts(response);
@@ -42,12 +43,24 @@ export default function Home() {
     setUserInput(e.target.value);
   };
 
-  const tryInAR = () => {
+  const tryInAR = async () => {
     // Validate the user input looks like a gltf link.
-    if (userInput.endsWith('.gltf')) {
-      console.log('Good');
+    if (userInput.includes("opensea.io/assets/0x")) {
+      console.log("User input URL looks good");
+      let reqUrlPrefix = userInput.includes("testnets.opensea.io")
+        ? "https://testnets-api.opensea.io/api/v1/asset/"
+        : "https://api.opensea.io/api/v1/asset/";
+      const reqUrl = reqUrlPrefix + userInput.split("/assets/")[1];
+      console.log(reqUrl);
+      const response = await axios.get(reqUrl);
+      console.log(response);
+      if (response.data.animation_url && response.data.animation_url.endsWith("gltf")) {
+        // TODO: Pass this animation_url to THREE.js scene.
+      } else {
+        console.log("Asset is not GLTF and cannot be used in 3D animation!");
+      }
     } else {
-      console.log('URL does not contain a 3D NFT!');
+      console.log("URL does not look like an OpenSea NFT!");
     }
   };
 
@@ -80,17 +93,23 @@ export default function Home() {
             fullWidth
             label="Enter OpenSea NFT link"
             variant="filled"
-            onChange={ handleTextFieldChange }
+            onChange={handleTextFieldChange}
           />
         </Box>
-        <button onClick={ tryInAR }>Try in AR</button>
+        <button onClick={tryInAR}>Try in AR</button>
       </Box>
       <Typography variant="body1" align="center" color="white" mt={1} mb={1}>
         Or
       </Typography>
       <ConnectWallet />
       <button onClick={requestAssets}>Request Assets</button>
-      <button onClick={ () => { navigate("/nftlist"); } }>NFT List</button>
+      <button
+        onClick={() => {
+          navigate("/nftlist");
+        }}
+      >
+        NFT List
+      </button>
       <div>Your account is: {account}</div>
       <div>Your nfts are: {JSON.stringify(nfts)}</div>
     </div>
