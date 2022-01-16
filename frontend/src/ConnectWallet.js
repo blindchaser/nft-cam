@@ -4,6 +4,7 @@ import Button from "@mui/material/Button";
 import { UserContext } from "./LoginContext";
 import axios from "axios";
 import Web3 from "web3";
+import { useNavigate } from "react-router-dom";
 
 const StyledButton = styled(Button)({
   color: "#ffd500",
@@ -23,6 +24,7 @@ const StyledButton = styled(Button)({
 });
 
 export default function ConnectWallet() {
+  const navigate = useNavigate();
   const [user, setUser] = useContext(UserContext);
   const requestAssets = async () => {
     const web3 = new Web3(Web3.givenProvider || "http://localhost:7545");
@@ -41,10 +43,22 @@ export default function ConnectWallet() {
     setUser({ account: accounts[0], nfts: response.data.assets });
   };
   return (
-    <StyledButton variant="contained" onClick={requestAssets}>
-      {user
-        ? "Connected! " + user.account
-        : "Connect wallet to view your collection"}
-    </StyledButton>
+    <div>
+      <StyledButton variant="contained" onClick={requestAssets}>
+        {user
+          ? "Connected! " + user.account
+          : "Connect wallet to view your collection"}
+      </StyledButton>
+      <br/>
+      {user && (
+        <StyledButton variant="contained"
+          onClick={() => {
+            navigate("/nftlist");
+          }}
+        >
+          View my OpenSea NFTs
+        </StyledButton>
+      )}
+    </div>
   );
 }
