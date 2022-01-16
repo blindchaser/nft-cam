@@ -6,9 +6,11 @@ import TextField from "@mui/material/TextField";
 import TryInAR from "./TryInAR";
 import ConnectWallet from "./ConnectWallet";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import Web3 from "web3";
 import Button from "@mui/material/Button";
+import { UserContext } from './LoginContext';
+import { useNavigate } from 'react-router-dom';
 
 const CssTextField = styled(TextField)({
   "& .MuiFilledInput-input": {
@@ -38,6 +40,8 @@ const StyledButton = styled(Button)({
 
 export default function Home() {
   const [userInput, setUserInput] = useState("");
+  let [user, setUser, userInputURL, setUserInputURL] = useContext(UserContext)
+  const navigate = useNavigate();
 
   const handleTextFieldChange = (e) => {
     setUserInput(e.target.value);
@@ -55,7 +59,8 @@ export default function Home() {
       const response = await axios.get(reqUrl);
       console.log(response);
       if (response.data.animation_url && response.data.animation_url.endsWith("gltf")) {
-        // TODO: Pass this animation_url to THREE.js scene.
+        setUserInputURL(response.data.animation_url);
+        navigate('/arcam');
       } else {
         console.log("Asset is not GLTF and cannot be used in 3D animation!");
       }
