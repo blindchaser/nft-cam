@@ -8,7 +8,7 @@ import ConnectWallet from "./ConnectWallet";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Web3 from "web3";
-import { useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
 
 const CssTextField = styled(TextField)({
   "& .MuiFilledInput-input": {
@@ -19,25 +19,25 @@ const CssTextField = styled(TextField)({
   },
 });
 
-export default function Home() {
-  const navigate = useNavigate();
-  const [userInput, setUserInput] = useState("");
+const StyledButton = styled(Button)({
+  color: "#ffd500",
+  height: "55px",
+  boxShadow: "none",
+  textTransform: "none",
+  fontSize: 16,
+  backgroundColor: "#303030",
+  borderColor: "#ffd500",
+  border: "1px solid",
+  "&:hover": {
+    backgroundColor: "#a6a6a6",
+  },
+  "&:active": {
+    backgroundColor: "#a6a6a6",
+  },
+});
 
-  const [account, setAccount] = useState(); // state variable to set account.
-  const [nfts, setNfts] = useState(); // state variable to set account.
-  const requestAssets = async () => {
-    const web3 = new Web3(Web3.givenProvider || "http://localhost:7545");
-    const accounts = await web3.eth.requestAccounts();
-    console.log(accounts);
-    setAccount(accounts[0]);
-    const reqUrl =
-      "https://testnets-api.opensea.io/api/v1/assets?format=json&owner=" +
-      accounts[0];
-    console.log(reqUrl);
-    const response = await axios.get(reqUrl);
-    setNfts(response);
-    console.log(response);
-  };
+export default function Home() {
+  const [userInput, setUserInput] = useState("");
 
   const handleTextFieldChange = (e) => {
     setUserInput(e.target.value);
@@ -96,22 +96,12 @@ export default function Home() {
             onChange={handleTextFieldChange}
           />
         </Box>
-        <button onClick={tryInAR}>Try in AR</button>
+        <StyledButton variant="contained" onClick={tryInAR}>Try in AR</StyledButton>
       </Box>
       <Typography variant="body1" align="center" color="white" mt={1} mb={1}>
         Or
       </Typography>
       <ConnectWallet />
-      <button onClick={requestAssets}>Request Assets</button>
-      <button
-        onClick={() => {
-          navigate("/nftlist");
-        }}
-      >
-        NFT List
-      </button>
-      <div>Your account is: {account}</div>
-      <div>Your nfts are: {JSON.stringify(nfts)}</div>
     </div>
   );
 }
