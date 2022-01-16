@@ -5,6 +5,8 @@ import { UserContext } from './LoginContext'
 import { useNavigate } from 'react-router-dom'
 
 export default function NFTList() {
+  let [rows, updateRows] = useState([])
+  let [user, setUser] = useContext(UserContext)
   const navigate = useNavigate()
   const columns = [
     { field: 'icon', headerName: '', width: 120 },
@@ -20,6 +22,14 @@ export default function NFTList() {
             onClick={() => {
               // TODO: Pass this URL to THREE.js scene.
               console.log(cellValues.row.gltf_url)
+              setUser((u) => {
+                for (let i = 0; i < u.nfts.length; i++) {
+                  if (i === cellValues.row.id) {
+                    u.nfts[i].selected = true
+                  }
+                }
+                return u
+              })
               navigate('/arcam')
             }}
           >
@@ -30,8 +40,6 @@ export default function NFTList() {
     },
   ]
 
-  const [user] = useContext(UserContext)
-  let [rows, updateRows] = useState([])
   useEffect(() => {
     rows = []
     if (user.nfts) {

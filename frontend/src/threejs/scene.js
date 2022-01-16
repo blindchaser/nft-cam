@@ -1,11 +1,12 @@
-import * as THREE from "three";
-import { Pose, POSE_CONNECTIONS } from "@mediapipe/pose";
-import { Camera } from "@mediapipe/camera_utils";
-import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+import * as THREE from 'three'
+import { Pose, POSE_CONNECTIONS } from '@mediapipe/pose'
+import { Camera } from '@mediapipe/camera_utils'
+import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
 
-export default function initScene() {
+export default function initScene(assetUrl) {
+  console.log('passed into initScene', assetUrl)
   //#region custom part
 
   // When debugMode is false, the UI would be more clean, and no debug canvas/gizmos
@@ -14,8 +15,8 @@ export default function initScene() {
   var debugMode = false
 
   //set a list of body nodes
-  var bodyNodes = {};
-  var posePositions = new Array(33);
+  var bodyNodes = {}
+  var posePositions = new Array(33)
   posePositions = [
     new THREE.Vector3(0.04951013624668121, -0.5537993907928467, -0.34814453125),
     new THREE.Vector3(
@@ -134,10 +135,10 @@ export default function initScene() {
       0.29396504163742065,
       -0.0327148437596
     ),
-  ];
-  var posePositionFlipped = new Array(33);
+  ]
+  var posePositionFlipped = new Array(33)
   // This is for when the positions are not visible to the camera
-  var defaultPosePositions = new Array(33);
+  var defaultPosePositions = new Array(33)
   defaultPosePositions = [
     new THREE.Vector3(
       0.032414693385362625,
@@ -228,82 +229,82 @@ export default function initScene() {
     ),
     new THREE.Vector3(0.13412508368492126, 0.23217885196208954, 0.2568359375),
     new THREE.Vector3(-0.14830461144447327, 0.456640362739563, 0.19287109375),
-  ];
-  var poseData = {};
-  var poseCubes = new Array(33);
+  ]
+  var poseData = {}
+  var poseCubes = new Array(33)
 
   //#endregion
 
   //#region Mediapipe part start
-  const videoElement = document.getElementsByClassName("input_video")[0];
-  const canvasElement = document.getElementsByClassName("output_canvas")[0];
-  canvasElement.width = window.innerWidth;
-  canvasElement.height = window.innerHeight;
+  const videoElement = document.getElementsByClassName('input_video')[0]
+  const canvasElement = document.getElementsByClassName('output_canvas')[0]
+  canvasElement.width = window.innerWidth
+  canvasElement.height = window.innerHeight
 
-  const canvasCtx = canvasElement.getContext("2d");
+  const canvasCtx = canvasElement.getContext('2d')
   const landmarkContainer = document.getElementsByClassName(
-    "landmark-grid-container"
-  )[0];
+    'landmark-grid-container'
+  )[0]
   //const grid = new LandmarkGrid(landmarkContainer);
 
   //#region MAIN MEDIAPIPE CUSTOM LOGIC HERE
   function onResults(results) {
     if (!results.poseLandmarks) {
-      return;
+      return
     }
 
     results.poseWorldLandmarks.forEach((element, index) => {
-      defaultPosePositions[index].x;
+      defaultPosePositions[index].x
       posePositions[index] = new THREE.Vector3(
         element.x * element.visibility +
-        defaultPosePositions[index].x * (1 - element.visibility),
+          defaultPosePositions[index].x * (1 - element.visibility),
         element.y * element.visibility +
-        defaultPosePositions[index].y * (1 - element.visibility),
+          defaultPosePositions[index].y * (1 - element.visibility),
         element.z * element.visibility +
-        defaultPosePositions[index].z * (1 - element.visibility)
-      );
-    });
+          defaultPosePositions[index].z * (1 - element.visibility)
+      )
+    })
     //console.log(posePositions)
 
-    canvasCtx.save();
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.save()
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
     // canvasCtx.drawImage(results.segmentationMask, 0, 0,
     // 	canvasElement.width, canvasElement.height);
 
     // Only overwrite existing pixels.
-    canvasCtx.globalCompositeOperation = "source-in";
-    canvasCtx.fillStyle = "#00FF00";
-    canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height);
+    canvasCtx.globalCompositeOperation = 'source-in'
+    canvasCtx.fillStyle = '#00FF00'
+    canvasCtx.fillRect(0, 0, canvasElement.width, canvasElement.height)
 
     // Only overwrite missing pixels.
-    canvasCtx.globalCompositeOperation = "destination-atop";
+    canvasCtx.globalCompositeOperation = 'destination-atop'
     canvasCtx.drawImage(
       results.image,
       0,
       0,
       canvasElement.width,
       canvasElement.height
-    );
+    )
 
-    canvasCtx.globalCompositeOperation = "source-over";
+    canvasCtx.globalCompositeOperation = 'source-over'
     drawConnectors(canvasCtx, results.poseLandmarks, POSE_CONNECTIONS, {
-      color: "#00FF00",
+      color: '#00FF00',
       lineWidth: 4,
-    });
+    })
     drawLandmarks(canvasCtx, results.poseLandmarks, {
-      color: "#FF0000",
+      color: '#FF0000',
       lineWidth: 2,
-    });
-    canvasCtx.restore();
+    })
+    canvasCtx.restore()
 
     //grid.updateLandmarks(results.poseWorldLandmarks);
   }
   //#endregion
   const pose = new Pose({
     locateFile: (file) => {
-      return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`;
+      return `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
     },
-  });
+  })
   pose.setOptions({
     modelComplexity: 0,
     smoothLandmarks: false,
@@ -311,24 +312,24 @@ export default function initScene() {
     smoothSegmentation: false,
     minDetectionConfidence: 0.5,
     minTrackingConfidence: 0.5,
-  });
-  pose.onResults(onResults);
+  })
+  pose.onResults(onResults)
 
   const camera = new Camera(videoElement, {
     onFrame: async () => {
-      await pose.send({ image: videoElement });
+      await pose.send({ image: videoElement })
     },
     width: window.innerWidth,
     height: window.innerHeight,
-  });
-  camera.start();
+  })
+  camera.start()
   //#endregion
 
   //#region THREE js part start
   //#region config
 
   // Create an empty scene
-  var scene = new THREE.Scene();
+  var scene = new THREE.Scene()
 
   // Create a basic perspective camera
   var threeDcamera = new THREE.PerspectiveCamera(
@@ -336,109 +337,108 @@ export default function initScene() {
     window.innerWidth / window.innerHeight,
     0.001,
     1000
-  );
-  threeDcamera.position.set(0, 0.8, -1);
-  threeDcamera.lookAt(new THREE.Vector3(0, 0.5, 0));
+  )
+  threeDcamera.position.set(0, 0.8, -1)
+  threeDcamera.lookAt(new THREE.Vector3(0, 0.5, 0))
 
-  var threeDCanvasObj = document.getElementById("threeDCanvas");
-  threeDCanvasObj.width = window.innerWidth;
-  threeDCanvasObj.height = window.innerHeight;
+  var threeDCanvasObj = document.getElementById('threeDCanvas')
+  threeDCanvasObj.width = window.innerWidth
+  threeDCanvasObj.height = window.innerHeight
 
   // Create a renderer with Antialiasing
   var renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true,
     canvas: threeDCanvas,
-  });
-  renderer.autoClear = false; // important!
+  })
+  renderer.autoClear = false // important!
 
   // Configure renderer clear color
-  renderer.setClearColor(0x000000, 0);
+  renderer.setClearColor(0x000000, 0)
 
   // Configure renderer size
-  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setSize(window.innerWidth, window.innerHeight)
 
   // Append Renderer to DOM
   //document.body.appendChild( renderer.domElement );
   if (debugMode) {
     // Create a Cube Mesh with basic material
-    var geometry = new THREE.BoxGeometry(0.02, 0.02, 0.02);
-    var material = new THREE.MeshBasicMaterial({ color: "#433F81" });
-    var elbowMat = new THREE.MeshBasicMaterial({ color: "#FF0000" });
-    var shoulderMat = new THREE.MeshBasicMaterial({ color: "#0000FF" });
-    var hipMat = new THREE.MeshBasicMaterial({ color: "#00FF00" });
-    var kneeMat = new THREE.MeshBasicMaterial({ color: "#FFCC00" });
-    var ankleMat = new THREE.MeshBasicMaterial({ color: "#000000" });
+    var geometry = new THREE.BoxGeometry(0.02, 0.02, 0.02)
+    var material = new THREE.MeshBasicMaterial({ color: '#433F81' })
+    var elbowMat = new THREE.MeshBasicMaterial({ color: '#FF0000' })
+    var shoulderMat = new THREE.MeshBasicMaterial({ color: '#0000FF' })
+    var hipMat = new THREE.MeshBasicMaterial({ color: '#00FF00' })
+    var kneeMat = new THREE.MeshBasicMaterial({ color: '#FFCC00' })
+    var ankleMat = new THREE.MeshBasicMaterial({ color: '#000000' })
 
-    var cube = new THREE.Mesh(geometry, material);
+    var cube = new THREE.Mesh(geometry, material)
     var debugSphere = new THREE.Mesh(
       new THREE.SphereGeometry(0.03, 0.03, 0.03),
-      new THREE.MeshBasicMaterial({ color: "#FF0000" })
-    );
+      new THREE.MeshBasicMaterial({ color: '#FF0000' })
+    )
     var debugCylinder = new THREE.Mesh(
       new THREE.BoxGeometry(0.6, 0.01, 0.01),
-      new THREE.MeshBasicMaterial({ color: "#FF0000" })
-    );
+      new THREE.MeshBasicMaterial({ color: '#FF0000' })
+    )
     var debugBox = new THREE.Mesh(
       new THREE.BoxGeometry(0.03, 0.03, 0.03),
-      new THREE.MeshBasicMaterial({ color: "#AA0000" })
-    );
+      new THREE.MeshBasicMaterial({ color: '#AA0000' })
+    )
 
     for (var i = 0; i < 33; i++) {
       if (i == 13 || i == 14) {
-        poseCubes[i] = new THREE.Mesh(geometry, elbowMat);
+        poseCubes[i] = new THREE.Mesh(geometry, elbowMat)
       } else if (i == 23 || i == 24) {
-        poseCubes[i] = new THREE.Mesh(geometry, hipMat);
+        poseCubes[i] = new THREE.Mesh(geometry, hipMat)
       } else if (i == 11 || i == 12) {
-        poseCubes[i] = new THREE.Mesh(geometry, shoulderMat);
+        poseCubes[i] = new THREE.Mesh(geometry, shoulderMat)
       } else if (i == 25 || i == 26) {
-        poseCubes[i] = new THREE.Mesh(geometry, kneeMat);
+        poseCubes[i] = new THREE.Mesh(geometry, kneeMat)
       } else if (i == 27 || i == 28) {
-        poseCubes[i] = new THREE.Mesh(geometry, ankleMat);
+        poseCubes[i] = new THREE.Mesh(geometry, ankleMat)
       } else {
-        poseCubes[i] = new THREE.Mesh(geometry, material);
+        poseCubes[i] = new THREE.Mesh(geometry, material)
       }
 
-      scene.add(poseCubes[i]);
+      scene.add(poseCubes[i])
     }
     // Add cube to Scene
-    scene.add(cube);
-    scene.add(debugCylinder);
-    scene.add(debugSphere);
-    scene.add(debugBox);
+    scene.add(cube)
+    scene.add(debugCylinder)
+    scene.add(debugSphere)
+    scene.add(debugBox)
   }
 
-
   //webcam video texture part
-  var width = window.innerWidth;
-  var height = window.innerHeight;
+  var width = window.innerWidth
+  var height = window.innerHeight
   //let cameraOrtho = new THREE.OrthographicCamera( - width / 2, width / 2, height / 2, - height / 2, 1, 10 );
   let cameraOrtho = new THREE.PerspectiveCamera(
     75,
     window.innerWidth / window.innerHeight,
     0.001,
     1000
-  );
+  )
 
-  cameraOrtho.position.z = 10;
-  let sceneOrtho = new THREE.Scene();
+  cameraOrtho.position.z = 10
+  let sceneOrtho = new THREE.Scene()
 
-  var webcamVideo = document.getElementById("webcam_video");
-  const webcamTexture = new THREE.VideoTexture(webcamVideo);
-  const webcamPlaneGeo = new THREE.PlaneGeometry(32, 18);
+  var webcamVideo = document.getElementById('webcam_video')
+  const webcamTexture = new THREE.VideoTexture(webcamVideo)
+  const webcamPlaneGeo = new THREE.PlaneGeometry(32, 18)
   const webcamPlaneMat = new THREE.MeshBasicMaterial({
     map: webcamTexture,
     side: THREE.DoubleSide,
-  });
-  const webcamMesh = new THREE.Mesh(webcamPlaneGeo, webcamPlaneMat);
-  webcamMesh.position.set(0, 0, 0);
+  })
+  const webcamMesh = new THREE.Mesh(webcamPlaneGeo, webcamPlaneMat)
+  webcamMesh.position.set(0, 0, 0)
   //webcamMesh.lookAt(threeDcamera)
-  sceneOrtho.add(webcamMesh);
+  sceneOrtho.add(webcamMesh)
   //console.info(cube.matrix);
   //#endregion
 
   var render = function () {
-    requestAnimationFrame(render);
+    requestAnimationFrame(render)
     //#region MAIN THREE.JS CUSTOM LOGIC HERE
     if (posePositions[0]) {
       posePositions.forEach((element, index) => {
@@ -446,84 +446,83 @@ export default function initScene() {
           -element.x,
           -element.y,
           element.z
-        );
-        if(debugMode){
+        )
+        if (debugMode) {
           poseCubes[index].position.set(
             posePositionFlipped[index].x,
             posePositionFlipped[index].y,
             posePositionFlipped[index].z
-          );
+          )
         }
-        
-      });
+      })
 
-      poseData.leftShoulderPos = posePositionFlipped[11];
-      poseData.rightShoulderPos = posePositionFlipped[12];
+      poseData.leftShoulderPos = posePositionFlipped[11]
+      poseData.rightShoulderPos = posePositionFlipped[12]
       poseData.shoulderCenterPos = new THREE.Vector3(
         (poseData.leftShoulderPos.x + poseData.rightShoulderPos.x) / 2,
         (poseData.leftShoulderPos.y + poseData.rightShoulderPos.y) / 2,
         (poseData.leftShoulderPos.z + poseData.rightShoulderPos.z) / 2
-      );
-      poseData.nosePos = posePositionFlipped[0];
-      poseData.headVector = new THREE.Vector3();
+      )
+      poseData.nosePos = posePositionFlipped[0]
+      poseData.headVector = new THREE.Vector3()
       poseData.headVector
         .subVectors(poseData.nosePos, poseData.shoulderCenterPos)
-        .normalize();
+        .normalize()
 
-      poseData.leftElbowPos = posePositionFlipped[13];
-      poseData.leftArmVector = new THREE.Vector3();
+      poseData.leftElbowPos = posePositionFlipped[13]
+      poseData.leftArmVector = new THREE.Vector3()
       poseData.leftArmVector
         .subVectors(poseData.leftElbowPos, poseData.leftShoulderPos)
-        .normalize();
-      poseData.rightElbowPos = posePositionFlipped[14];
-      poseData.rightArmVector = new THREE.Vector3();
+        .normalize()
+      poseData.rightElbowPos = posePositionFlipped[14]
+      poseData.rightArmVector = new THREE.Vector3()
       poseData.rightArmVector
         .subVectors(poseData.rightElbowPos, poseData.rightShoulderPos)
-        .normalize();
-      poseData.leftWristPos = posePositionFlipped[15];
-      poseData.leftForeArmVector = new THREE.Vector3();
+        .normalize()
+      poseData.leftWristPos = posePositionFlipped[15]
+      poseData.leftForeArmVector = new THREE.Vector3()
       poseData.leftForeArmVector
         .subVectors(poseData.leftWristPos, poseData.leftElbowPos)
-        .normalize();
-      poseData.rightWristPos = posePositionFlipped[16];
-      poseData.rightForeArmVector = new THREE.Vector3();
+        .normalize()
+      poseData.rightWristPos = posePositionFlipped[16]
+      poseData.rightForeArmVector = new THREE.Vector3()
       poseData.rightForeArmVector
         .subVectors(poseData.rightWristPos, poseData.rightElbowPos)
-        .normalize();
+        .normalize()
 
-      poseData.leftHipPos = posePositionFlipped[23];
-      poseData.leftKneePos = posePositionFlipped[25];
-      poseData.leftThighVector = new THREE.Vector3();
+      poseData.leftHipPos = posePositionFlipped[23]
+      poseData.leftKneePos = posePositionFlipped[25]
+      poseData.leftThighVector = new THREE.Vector3()
       poseData.leftThighVector
         .subVectors(poseData.leftKneePos, poseData.leftHipPos)
-        .normalize();
-      poseData.leftAnklePos = posePositionFlipped[27];
-      poseData.leftLegVector = new THREE.Vector3();
+        .normalize()
+      poseData.leftAnklePos = posePositionFlipped[27]
+      poseData.leftLegVector = new THREE.Vector3()
       poseData.leftLegVector
         .subVectors(poseData.leftAnklePos, poseData.leftKneePos)
-        .normalize();
+        .normalize()
 
-      poseData.rightHipPos = posePositionFlipped[24];
-      poseData.rightKneePos = posePositionFlipped[26];
-      poseData.rightThighVector = new THREE.Vector3();
+      poseData.rightHipPos = posePositionFlipped[24]
+      poseData.rightKneePos = posePositionFlipped[26]
+      poseData.rightThighVector = new THREE.Vector3()
       poseData.rightThighVector
         .subVectors(poseData.rightKneePos, poseData.rightHipPos)
-        .normalize();
-      poseData.rightAnklePos = posePositionFlipped[28];
-      poseData.rightLegVector = new THREE.Vector3();
+        .normalize()
+      poseData.rightAnklePos = posePositionFlipped[28]
+      poseData.rightLegVector = new THREE.Vector3()
       poseData.rightLegVector
         .subVectors(poseData.rightAnklePos, poseData.rightKneePos)
-        .normalize();
+        .normalize()
 
       poseData.hipCenterPos = new THREE.Vector3(
         (poseData.leftHipPos.x + poseData.rightHipPos.x) / 2,
         (poseData.leftHipPos.y + poseData.rightHipPos.y) / 2,
         (poseData.leftHipPos.z + poseData.rightHipPos.z) / 2
-      );
-      poseData.hipVector = new THREE.Vector3();
+      )
+      poseData.hipVector = new THREE.Vector3()
       poseData.hipVector
         .subVectors(poseData.shoulderCenterPos, poseData.hipCenterPos)
-        .normalize();
+        .normalize()
 
       // poseData.hipVector  = new THREE.Vector3(0.5,0.5,0).normalize()
       //poseData.rightArmVector  = new THREE.Vector3(-0.5,0,-0.5).normalize()
@@ -531,132 +530,131 @@ export default function initScene() {
     }
     if (bodyNodes.root) {
       // reset rotation
-      bodyNodes.root.position.set(0, 0, 0);
-      bodyNodes.root.scale.set(1, 1, 1);
+      bodyNodes.root.position.set(0, 0, 0)
+      bodyNodes.root.scale.set(1, 1, 1)
       //bodyNodes.root.rotation.set(-Math.PI, 0, Math.PI)
-      bodyNodes.root.rotation.set(0, 0, 0);
-      bodyNodes.controller.rotation.set(0, 0, 0);
-      bodyNodes.hip.rotation.set(0, 0, 0);
-      bodyNodes.chest.rotation.set(0, 0, 0);
-      bodyNodes.head.rotation.set(0, 0, 0);
-      bodyNodes.leftArm.rotation.set(0, 0, 0);
-      bodyNodes.rightArm.rotation.set(0, 0, 0);
-      bodyNodes.leftForeArm.rotation.set(0, 0, 0);
-      bodyNodes.rightForeArm.rotation.set(0, 0, 0);
-      bodyNodes.leftThigh.rotation.set(0, 0, 0);
-      bodyNodes.rightThigh.rotation.set(0, 0, 0);
+      bodyNodes.root.rotation.set(0, 0, 0)
+      bodyNodes.controller.rotation.set(0, 0, 0)
+      bodyNodes.hip.rotation.set(0, 0, 0)
+      bodyNodes.chest.rotation.set(0, 0, 0)
+      bodyNodes.head.rotation.set(0, 0, 0)
+      bodyNodes.leftArm.rotation.set(0, 0, 0)
+      bodyNodes.rightArm.rotation.set(0, 0, 0)
+      bodyNodes.leftForeArm.rotation.set(0, 0, 0)
+      bodyNodes.rightForeArm.rotation.set(0, 0, 0)
+      bodyNodes.leftThigh.rotation.set(0, 0, 0)
+      bodyNodes.rightThigh.rotation.set(0, 0, 0)
 
       if (debugMode) {
         debugCylinder.quaternion.setFromUnitVectors(
           new THREE.Vector3(-1, 0, 0),
           poseData.rightArmVector.clone().normalize()
-        );
+        )
       }
       bodyNodes.hip.quaternion.setFromUnitVectors(
         new THREE.Vector3(0, 1, 0),
         poseData.hipVector.clone().normalize()
-      );
+      )
 
       // Arms part
       // Firstly rorate the arm along the left axis
       bodyNodes.rightArm.quaternion.setFromUnitVectors(
         new THREE.Vector3(-1, 0, 0),
         poseData.leftArmVector
-      );
+      )
       // get the invert rotation of the parent(hip)
-      var hipWorldQuatInvert = new THREE.Quaternion();
-      bodyNodes.hip.getWorldQuaternion(hipWorldQuatInvert);
-      hipWorldQuatInvert.invert();
+      var hipWorldQuatInvert = new THREE.Quaternion()
+      bodyNodes.hip.getWorldQuaternion(hipWorldQuatInvert)
+      hipWorldQuatInvert.invert()
       // apply the invert rotation to the arm, to compensate the rotation of the parent
-      bodyNodes.rightArm.applyQuaternion(hipWorldQuatInvert);
+      bodyNodes.rightArm.applyQuaternion(hipWorldQuatInvert)
       // Apply these value to the other arm
       bodyNodes.leftArm.quaternion.setFromUnitVectors(
         new THREE.Vector3(1, 0, 0),
         poseData.rightArmVector
-      );
+      )
       // apply the invert rotation to the arm, to compensate the rotation of the parent
-      bodyNodes.leftArm.applyQuaternion(hipWorldQuatInvert);
+      bodyNodes.leftArm.applyQuaternion(hipWorldQuatInvert)
       // - head part
       bodyNodes.head.quaternion.setFromUnitVectors(
         new THREE.Vector3(0, 1, 0),
         poseData.headVector
-      );
-      bodyNodes.head.applyQuaternion(hipWorldQuatInvert);
-      const headAdjustQuat = new THREE.Quaternion();
-      headAdjustQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 5);
-      bodyNodes.head.applyQuaternion(headAdjustQuat);
+      )
+      bodyNodes.head.applyQuaternion(hipWorldQuatInvert)
+      const headAdjustQuat = new THREE.Quaternion()
+      headAdjustQuat.setFromAxisAngle(new THREE.Vector3(1, 0, 0), Math.PI / 5)
+      bodyNodes.head.applyQuaternion(headAdjustQuat)
       // - left Thigh part
       bodyNodes.leftThigh.quaternion.setFromUnitVectors(
         new THREE.Vector3(0, -1, 0),
         poseData.rightThighVector
-      );
-      bodyNodes.leftThigh.applyQuaternion(hipWorldQuatInvert);
+      )
+      bodyNodes.leftThigh.applyQuaternion(hipWorldQuatInvert)
       // - right Thigh part
       bodyNodes.rightThigh.quaternion.setFromUnitVectors(
         new THREE.Vector3(0, -1, 0),
         poseData.leftThighVector
-      );
-      bodyNodes.rightThigh.applyQuaternion(hipWorldQuatInvert);
+      )
+      bodyNodes.rightThigh.applyQuaternion(hipWorldQuatInvert)
 
       // ForeArms part
       // Rotate the right fore arm based on the direction
       bodyNodes.rightForeArm.quaternion.setFromUnitVectors(
         new THREE.Vector3(-1, 0, 0),
         poseData.leftForeArmVector
-      );
+      )
       // get the invert rotation of the parent
-      var rightArmWorldQuatInvert = new THREE.Quaternion();
-      bodyNodes.rightArm.getWorldQuaternion(rightArmWorldQuatInvert);
-      rightArmWorldQuatInvert.invert();
+      var rightArmWorldQuatInvert = new THREE.Quaternion()
+      bodyNodes.rightArm.getWorldQuaternion(rightArmWorldQuatInvert)
+      rightArmWorldQuatInvert.invert()
       // apply the invert rotation of the parent to compensate
-      bodyNodes.rightForeArm.applyQuaternion(rightArmWorldQuatInvert);
+      bodyNodes.rightForeArm.applyQuaternion(rightArmWorldQuatInvert)
 
       // Rotate the left fore arm based on the direction
       bodyNodes.leftForeArm.quaternion.setFromUnitVectors(
         new THREE.Vector3(1, 0, 0),
         poseData.rightForeArmVector
-      );
+      )
       // get the invert rotation of the parent
-      var leftArmWorldQuatInvert = new THREE.Quaternion();
-      bodyNodes.leftArm.getWorldQuaternion(leftArmWorldQuatInvert);
-      leftArmWorldQuatInvert.invert();
+      var leftArmWorldQuatInvert = new THREE.Quaternion()
+      bodyNodes.leftArm.getWorldQuaternion(leftArmWorldQuatInvert)
+      leftArmWorldQuatInvert.invert()
       // apply the invert rotation of the parent to compensate
-      bodyNodes.leftForeArm.applyQuaternion(leftArmWorldQuatInvert);
+      bodyNodes.leftForeArm.applyQuaternion(leftArmWorldQuatInvert)
 
       // Legs part
       // Rotate the right leg based on the direction
       bodyNodes.rightLeg.quaternion.setFromUnitVectors(
         new THREE.Vector3(0, -1, 0),
         poseData.leftLegVector
-      );
+      )
       // get the invert rotation of the parent
-      var rightThighWorldQuatInvert = new THREE.Quaternion();
-      bodyNodes.rightThigh.getWorldQuaternion(rightThighWorldQuatInvert);
-      rightThighWorldQuatInvert.invert();
+      var rightThighWorldQuatInvert = new THREE.Quaternion()
+      bodyNodes.rightThigh.getWorldQuaternion(rightThighWorldQuatInvert)
+      rightThighWorldQuatInvert.invert()
       // apply the invert rotation of the parent to compensate
-      bodyNodes.rightLeg.applyQuaternion(rightThighWorldQuatInvert);
+      bodyNodes.rightLeg.applyQuaternion(rightThighWorldQuatInvert)
 
       // Rotate the left legbased on the direction
       bodyNodes.leftLeg.quaternion.setFromUnitVectors(
         new THREE.Vector3(0, -1, 0),
         poseData.rightLegVector
-      );
+      )
       // get the invert rotation of the parent
-      var leftThighWorldQuatInvert = new THREE.Quaternion();
-      bodyNodes.leftThigh.getWorldQuaternion(leftThighWorldQuatInvert);
-      leftThighWorldQuatInvert.invert();
+      var leftThighWorldQuatInvert = new THREE.Quaternion()
+      bodyNodes.leftThigh.getWorldQuaternion(leftThighWorldQuatInvert)
+      leftThighWorldQuatInvert.invert()
       // apply the invert rotation of the parent to compensate
-      bodyNodes.leftLeg.applyQuaternion(leftThighWorldQuatInvert);
+      bodyNodes.leftLeg.applyQuaternion(leftThighWorldQuatInvert)
 
       //debugSphere.position.set(worldLeft.x, worldLeft.y, worldLeft.z)
-      if(debugMode){
+      if (debugMode) {
         debugBox.position.set(
           poseData.rightArmVector.x,
           poseData.rightArmVector.y,
           poseData.rightArmVector.z
-        );
+        )
       }
-      
 
       // var leftLegAxis = new THREE.Vector3(1,0,0)
       // bodyNodes.leftLeg.quaternion.setFromUnitVectors(leftLegAxis, poseData.leftLegVector);
@@ -667,82 +665,79 @@ export default function initScene() {
       //cube.position.set(poseData.nosePos)
     }
 
-    renderer.clear();
+    renderer.clear()
     // render the video
-    renderer.render(sceneOrtho, cameraOrtho);
-    renderer.clearDepth();
+    renderer.render(sceneOrtho, cameraOrtho)
+    renderer.clearDepth()
     // render the actual scene
-    renderer.render(scene, threeDcamera);
+    renderer.render(scene, threeDcamera)
     //#endregion
-  };
+  }
 
-  function init() {
-    console.log("start init")
+  function init(assetUrl) {
+    console.log('start init')
 
-    const loader = new GLTFLoader();
+    const loader = new GLTFLoader()
     //models/gltf/nft/body.gltf
     //https://storage.opensea.io/files/9b17d37cd81949df47735fea9118529c.gltf
-    loader.load(
-      "https://storage.opensea.io/files/9b17d37cd81949df47735fea9118529c.gltf",
-      function (gltf) {
-        gltf.scene.scale.set(0.01, 0.01, 0.01);
-        bodyNodes.root = gltf.scene.children[0];
-        bodyNodes.controller = gltf.scene.children[0].children[1];
-        bodyNodes.hip = gltf.scene.children[0].children[1].children[1];
-        bodyNodes.chest =
-          gltf.scene.children[0].children[1].children[1].children[0];
-        bodyNodes.rightThigh =
-          gltf.scene.children[0].children[1].children[1].children[1];
-        bodyNodes.rightLeg =
-          gltf.scene.children[0].children[1].children[1].children[1].children[0];
-        bodyNodes.rightFoot =
-          gltf.scene.children[0].children[1].children[1].children[1].children[0].children[0];
+    loader.load(assetUrl, function (gltf) {
+      gltf.scene.scale.set(0.01, 0.01, 0.01)
+      bodyNodes.root = gltf.scene.children[0]
+      bodyNodes.controller = gltf.scene.children[0].children[1]
+      bodyNodes.hip = gltf.scene.children[0].children[1].children[1]
+      bodyNodes.chest =
+        gltf.scene.children[0].children[1].children[1].children[0]
+      bodyNodes.rightThigh =
+        gltf.scene.children[0].children[1].children[1].children[1]
+      bodyNodes.rightLeg =
+        gltf.scene.children[0].children[1].children[1].children[1].children[0]
+      bodyNodes.rightFoot =
+        gltf.scene.children[0].children[1].children[1].children[1].children[0].children[0]
 
-        bodyNodes.leftThigh =
-          gltf.scene.children[0].children[1].children[1].children[2];
-        bodyNodes.leftLeg =
-          gltf.scene.children[0].children[1].children[1].children[2].children[0];
-        bodyNodes.leftFoot =
-          gltf.scene.children[0].children[1].children[1].children[2].children[0].children[0];
+      bodyNodes.leftThigh =
+        gltf.scene.children[0].children[1].children[1].children[2]
+      bodyNodes.leftLeg =
+        gltf.scene.children[0].children[1].children[1].children[2].children[0]
+      bodyNodes.leftFoot =
+        gltf.scene.children[0].children[1].children[1].children[2].children[0].children[0]
 
-        bodyNodes.head =
-          gltf.scene.children[0].children[1].children[1].children[0].children[0];
-        bodyNodes.leftArm =
-          gltf.scene.children[0].children[1].children[1].children[0].children[1];
-        bodyNodes.rightArm =
-          gltf.scene.children[0].children[1].children[1].children[0].children[2];
-        bodyNodes.leftForeArm =
-          gltf.scene.children[0].children[1].children[1].children[0].children[1].children[0];
-        bodyNodes.rightForeArm =
-          gltf.scene.children[0].children[1].children[1].children[0].children[2].children[0];
-        bodyNodes.leftHand =
-          gltf.scene.children[0].children[1].children[1].children[0].children[1].children[0].children[0];
-        bodyNodes.rightHand =
-          gltf.scene.children[0].children[1].children[1].children[0].children[2].children[0].children[0];
+      bodyNodes.head =
+        gltf.scene.children[0].children[1].children[1].children[0].children[0]
+      bodyNodes.leftArm =
+        gltf.scene.children[0].children[1].children[1].children[0].children[1]
+      bodyNodes.rightArm =
+        gltf.scene.children[0].children[1].children[1].children[0].children[2]
+      bodyNodes.leftForeArm =
+        gltf.scene.children[0].children[1].children[1].children[0].children[1].children[0]
+      bodyNodes.rightForeArm =
+        gltf.scene.children[0].children[1].children[1].children[0].children[2].children[0]
+      bodyNodes.leftHand =
+        gltf.scene.children[0].children[1].children[1].children[0].children[1].children[0].children[0]
+      bodyNodes.rightHand =
+        gltf.scene.children[0].children[1].children[1].children[0].children[2].children[0].children[0]
 
-        console.log(bodyNodes)
+      console.log(bodyNodes)
 
-        gltf.scene.traverse(function (child) {
-          if (child.isMesh) {
-            console.log(child.name);
-          }
-        });
-        scene.add(gltf.scene);
-        if (debugMode) {
-          const axesHelper = new THREE.AxesHelper(2);
-          scene.add(axesHelper);
+      gltf.scene.traverse(function (child) {
+        if (child.isMesh) {
+          console.log(child.name)
         }
-        // add directional light
-        // White directional light at half intensity shining from the top.
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(0.4, 0.3, -0.7)
-        scene.add(directionalLight);
-        directionalLight.target = bodyNodes.root;
-
-
-        render();
       })
-    window.addEventListener('resize', onWindowResize);
+      scene.add(gltf.scene)
+      if (debugMode) {
+        const axesHelper = new THREE.AxesHelper(2)
+        scene.add(axesHelper)
+      }
+      // add directional light
+      // White directional light at half intensity shining from the top.
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
+      directionalLight.position.set(0.4, 0.3, -0.7)
+      scene.add(directionalLight)
+      directionalLight.target = bodyNodes.root
+
+      render()
+    })
+    window.addEventListener('resize', onWindowResize)
     // const controls = new OrbitControls( threeDcamera, renderer.domElement );
     //controls.addEventListener( 'change', render ); // use if there is no animation loop
     // controls.minDistance = 0.5;
@@ -751,14 +746,14 @@ export default function initScene() {
     //controls.update();
   }
   function onWindowResize() {
-    threeDcamera.aspect = window.innerWidth / window.innerHeight;
-    threeDcamera.updateProjectionMatrix();
+    threeDcamera.aspect = window.innerWidth / window.innerHeight
+    threeDcamera.updateProjectionMatrix()
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(window.innerWidth, window.innerHeight)
 
-    render();
+    render()
   }
   // Render Loop
-  init();
-  render();
+  init(assetUrl)
+  render()
 }
