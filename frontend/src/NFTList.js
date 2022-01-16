@@ -9,13 +9,13 @@ import { Link } from "react-router-dom";
 const columns = [
   { field: "icon", headerName: "", width: 120 },
   { field: "name", headerName: "NAME", width: 120 },
-  { field: "collection", headerName: "COLLECTION", width: 120 },
+  { field: "collection", headerName: "COLLECTION", width: 240 },
   { field: "type", headerName: "TYPE", width: 120 },
   {
     field: "showInAR",
     headerName: "",
     renderCell: (cellValues) => {
-      return <Link to="/arcam">AR Cam</Link>;
+      return <Link to="/arcam" style={{ color: "#ffd500" }}>Try in AR</Link>;
     },
   },
 ];
