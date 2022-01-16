@@ -4,6 +4,8 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 
+import UserContext from "./LoginContext";
+
 import "./index.scss";
 
 const useStrict = false;
@@ -20,7 +22,7 @@ if (useStrict) {
 } else {
   ReactDOM.render(
     <BrowserRouter>
-      <App />
+      <UserContext subPages={<App />} />
     </BrowserRouter>,
     document.getElementById("root")
   );

@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
 import TryInAR from "./TryInAR";
+import { UserContext } from "./LoginContext";
+import ARCam from "./threejs/ARCam";
+import { Link } from "react-router-dom";
 
 const columns = [
   { field: "icon", headerName: "", width: 120 },
@@ -9,21 +12,34 @@ const columns = [
   { field: "collection", headerName: "COLLECTION", width: 120 },
   { field: "type", headerName: "TYPE", width: 120 },
   {
-    field: "showInAR", headerName: "",
+    field: "showInAR",
+    headerName: "",
     renderCell: (cellValues) => {
-      return (
-        <TryInAR />
-      );
+      return <Link to="/arcam">AR Cam</Link>;
     },
   },
 ];
 
-var rows = [
-  { id: 1, name: "Pirate SeaDog", collection: "SANDBOX", type: "GLTF" },
-  { id: 2, name: "Pirate SeaDog", collection: "Axie Infinity", type: "PNG" },
-];
-
 export default function NFTList() {
+  const [user] = useContext(UserContext);
+  let [rows, updateRows] = useState([]);
+  useEffect(() => {
+    {
+      rows = [];
+      for (let i = 0; i < user.nfts.length; i++) {
+        const info = user.nfts[i];
+        updateRows((r) => [
+          ...r,
+          {
+            id: i,
+            name: info.name,
+            collection: info.asset_contract.name,
+            type: info.animation_original_url ? "Animation" : "Still",
+          },
+        ]);
+      }
+    }
+  }, []);
   return (
     <div style={{ height: 400, width: "60%" }}>
       <Typography variant="h3" align="center" color="white">
